@@ -125,7 +125,7 @@ $ az aks get-credentials --resource-group aks-workshop --name aks-workshop
 $ kubectl config use-context aks-workshop
 ```
 
-Edit ```consumer-app.yaml```, set the Service Bus ```<service_bus_connection_string>``` and the ```<container_registry_name>``` from the terraform output and then apply the Service Bus consumer app deployment
+Edit ```consumer-app.yaml```, set the ```<service_bus_connection_string>```, ```<container_registry_name>``` and ```<service_bus_namespace>``` from the terraform output and then apply the Service Bus consumer app deployment
 
 ```
 $ kubectl apply -f consumer-app.yaml
@@ -144,11 +144,11 @@ $ watch -n 5 kubectl -n consumer get pods -o wide
 $ kubectl -n consumer logs --selector app=consumer-app -f --max-log-requests 40
 ```
 
-Scale spot instances to zero simulating a scenario where spot instances are unavailable and watch that the deployment will be allocated in regular instances
+Scale spot instances to zero simulating a scenario where spot instances are unavailable and watch the deployment being allocated in regular instances
 
 ```
-$ az aks nodepool update --resource-group-name <resource_group_na,e> --cluster-name aks-workshop --name spot --disable-cluster-autoscaler
-$ az aks nodepool scale --resource-group-name <resource_group_na,e> --cluster-name aks-workshop --name spot --node-count 0
+$ az aks nodepool update --resource-group-name <resource_group_name> --cluster-name aks-workshop --name spot --disable-cluster-autoscaler
+$ az aks nodepool scale --resource-group-name <resource_group_name> --cluster-name aks-workshop --name spot --node-count 0
 $ watch -n 5 kubectl -n consumer get pods -o wide
 ```
 

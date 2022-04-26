@@ -60,6 +60,6 @@ spec:
   - type: azure-servicebus
     metadata:
       queueName: orders
-      namespace: aks-workshop-CF0Hut
+      namespace: <service_bus_namespace>
       messageCount: "10"
       connectionFromEnv: CONNECTION_STR
