@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: consumer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer-app
+  namespace: consumer
+spec:
+  selector:
+    matchLabels:
+      app: consumer-app
+  template:
+    metadata:
+      labels:
+        app: consumer-app
+    spec:
+      containers:
+      - name: consumer
+        image: <container_registry_name>.azurecr.io/consumer-app:latest
+        imagePullPolicy: Always
+        env:
+          - name: CONNECTION_STR
+            value: <service_bus_connection_string>
+          - name: QUEUE_NAME
+            value: orders
+        resources:
+          requests:
+            cpu: 500m
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                - key: kubernetes.azure.com/scalesetpriority
+                  operator: In
+                  values:
+                  - spot
+      tolerations:
+      - key: "kubernetes.azure.com/scalesetpriority"
+        operator: "Equal"
+        value: "spot"
+        effect: "NoSchedule"
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: consumer-app
+  namespace: consumer
+spec:
+  scaleTargetRef:
+    name: consumer-app
+  pollingInterval: 15
+  minReplicaCount: 0
+  maxReplicaCount: 20
+  triggers:
+  - type: azure-servicebus
+    metadata:
+      queueName: orders
+      namespace: aks-workshop-CF0Hut
+      messageCount: "10"
+      connectionFromEnv: CONNECTION_STR

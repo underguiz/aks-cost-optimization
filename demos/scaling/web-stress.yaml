@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-stress-simulator
+spec:
+  selector:
+    matchLabels:
+      app: web-stress-simulator
+  template:
+    metadata:
+      labels:
+        app: web-stress-simulator
+        workload: web-stress-simulator
+    spec:
+      containers:
+      - name: web-stress-simulator
+        image: flaviostutz/web-stress-simulator
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /web-stress-simulator-1.0.0/cpu?time=100
+            port: 8080
+        resources:
+          requests:
+            cpu: 500m
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: web-stress-simulator
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: web-stress-simulator
+  minReplicas: 1
+  maxReplicas: 50
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 200
+        periodSeconds: 5
