@@ -30,9 +30,9 @@ resource "time_offset" "tomorrow" {
 
 locals {
   start_time = "8:00"
-  stop_time = "19:00"
-  date      = substr(time_offset.tomorrow.rfc3339, 0, 10)
-  timezone  = "America/Sao_Paulo"
+  stop_time  = "19:00"
+  date       = substr(time_offset.tomorrow.rfc3339, 0, 10)
+  timezone   = "America/Sao_Paulo"
 }
 
 resource "azurerm_automation_schedule" "start" {
