@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-producer
+  namespace: order
+spec:
+  selector:
+    matchLabels:
+      app: order-producer
+  template:
+    metadata:
+      labels:
+        app: order-producer
+    spec:
+      containers:
+      - name: producer
+        image: aksworkshopIi9LzS.azurecr.io/order-producer:v1
+        envFrom:
+          - configMapRef:
+              name: service-bus-connection-str
+        resources:
+          requests:
+            cpu: 200m

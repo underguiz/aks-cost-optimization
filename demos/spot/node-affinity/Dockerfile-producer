@@ -6,6 +6,6 @@ RUN apt-get update &&\
 
 WORKDIR /app
 
-COPY service-bus-consumer.py service-bus-producer.py /app/
+COPY order-consumer.py order-producer.py /app/
 
-CMD python -u service-bus-consumer.py
+CMD exec python -u order-producer.py

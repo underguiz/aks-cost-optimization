@@ -57,7 +57,8 @@ _Azure Portal > Automation Accounts > start-stop-aks > Runbooks_
 
 Get the "development" cluster credentials and set it as the current context
 
-```$ az aks get-credentials --resource-group aks-workshop --name aks-workshop-dev
+```
+$ az aks get-credentials --resource-group <resource_group_name> --name aks-workshop-dev
 $ kubectl config use-context aks-workshop-dev
 ```
 
@@ -70,7 +71,7 @@ $ kubectl apply -f resource-quota.yaml --namespace=dev
 $ kubectl get resourcequota resource-quota --namespace=dev --output=yaml
 $ kubectl apply -f nginx-1.yaml --namespace=dev
 $ kubectl get resourcequota resource-quota --namespace=dev --output=yaml
-$ kubectl apply -f nginx-2.yaml --namespace=restricted
+$ kubectl apply -f nginx-2.yaml --namespace=dev
 ```
 
 ### Policy
@@ -89,14 +90,14 @@ $ kubectl apply -f nginx-2.yaml --namespace=default
 Get the "production" cluster credentials and set it as the current context
 
 ```
-$ az aks get-credentials --resource-group aks-workshop --name aks-workshop
+$ az aks get-credentials --resource-group <resource_group_name> --name aks-workshop
 $ kubectl config use-context aks-workshop
 ```
 
 Apply Regular and Spot deployments
 
 ```
-$ kubectl apply -f web-stress-spot-warm.yaml -f web-stress-spot-hot.yaml
+$ kubectl apply -f web-stress-spot-warm.yaml -f web-stress-spot-hot.yaml -f web-stress-service.yaml
 $ watch -n 5 kubectl get pods -o wide
 $ watch -n 5 kubectl get hpa
 ```
@@ -104,37 +105,36 @@ $ watch -n 5 kubectl get hpa
 Run a stress test against the service endpoint 
 
 ```
-kubectl get svc web-stress-simulator
-docker run -it artilleryio/artillery quick -n 3600 -c 15 "http://<SVC_ENDPOINT>/web-stress-simulator-1.0.0/cpu?time=100"
-
+kubectl run -it artillery --image=artilleryio/artillery -- quick -n 3600 -c 15 "http://web-stress-simulator/web-stress-simulator-1.0.0/cpu?time=100"
 ```
 
 #### Node Affinity
 
-Build the consumer-app image and push it to ACR
+Build the consumer and producer app images and push them to ACR
 
 ```
 $ cd ./demos/spot/node-affinity
-$ az acr build --registry <registry_name> --image consumer-app:latest .
+$ az acr build --registry <registry_name> --file Dockerfile-consumer --image order-consumer:v1 .
+$ az acr build --registry <registry_name> --file Dockerfile-producer --image order-producer:v1 .
 ```
 
 Get the "production" cluster credentials and set it as the current context
 
 ```
-$ az aks get-credentials --resource-group aks-workshop --name aks-workshop
+$ az aks get-credentials --resource-group <resource_group_name> --name aks-workshop
 $ kubectl config use-context aks-workshop
 ```
 
-Edit ```consumer-app.yaml```, set the ```<service_bus_connection_string>```, ```<container_registry_name>``` and ```<service_bus_namespace>``` from the terraform output and then apply the Service Bus consumer app deployment
+Edit ```order-consumer.yaml``` and ```order-producer.yaml```, set the ```<container_registry_name>``` from the terraform output and then apply the Service Bus consumer app deployment
 
 ```
-$ kubectl apply -f consumer-app.yaml
+$ kubectl apply -f order-consumer.yaml
 ```
 
 Start producing messages
 ```
-$ docker run -e CONNECTION_STR="<service_bus_connection_string>" -e QUEUE_NAME="orders" -it <registry_name>.azurecr.io/consumer-app:latest /bin/bash
-$ python service-bus-producer.py
+$ $ kubectl apply -f order-producer.yaml
+$ kubectl -n order scale --replicas=0 deployment/order-producer
 ```
 
 Watch the consumer app deployment scale based on the queue size leveraging KEDA
@@ -147,12 +147,11 @@ $ kubectl -n consumer logs --selector app=consumer-app -f --max-log-requests 40
 Scale spot instances to zero simulating a scenario where spot instances are unavailable and watch the deployment being allocated in regular instances
 
 ```
-$ az aks nodepool update --resource-group-name <resource_group_name> --cluster-name aks-workshop --name spot --disable-cluster-autoscaler
-$ az aks nodepool scale --resource-group-name <resource_group_name> --cluster-name aks-workshop --name spot --node-count 0
+$ az aks nodepool update --resource-group <resource_group_name> --cluster-name aks-workshop --name spot --disable-cluster-autoscaler
+$ az aks nodepool scale --resource-group <resource_group_name> --cluster-name aks-workshop --name spot --node-count 0
 $ watch -n 5 kubectl -n consumer get pods -o wide
 ```
 
 Watch the queue getting consumed again
 
 _Azure Portal > Service Bus > aks-workshop namespace > queues > order_
-

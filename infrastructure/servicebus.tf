@@ -23,3 +23,22 @@ resource "azurerm_servicebus_queue_authorization_rule" "consumer-app" {
   send   = true
   manage = true
 }
+
+resource "kubernetes_namespace" "order" {
+  metadata {
+    name = "order"
+  }
+}
+
+resource "kubernetes_config_map" "service-bus-connection-str" {
+  metadata {
+    name      = "service-bus-connection-str"
+    namespace = kubernetes_namespace.order.metadata.0.name
+  }
+
+  data = {
+    QUEUE_NAME     = "orders"
+    CONNECTION_STR = azurerm_servicebus_queue_authorization_rule.consumer-app.primary_connection_string
+  }
+
+}

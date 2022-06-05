@@ -1,34 +1,27 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: consumer
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: consumer-app
-  namespace: consumer
+  name: order-consumer
+  namespace: order
 spec:
   selector:
     matchLabels:
-      app: consumer-app
+      app: order-consumer
   template:
     metadata:
       labels:
-        app: consumer-app
+        app: order-consumer
     spec:
       containers:
       - name: consumer
-        image: <container_registry_name>.azurecr.io/consumer-app:latest
+        image: aksworkshopIi9LzS.azurecr.io/order-consumer:v1
         imagePullPolicy: Always
-        env:
-          - name: CONNECTION_STR
-            value: <service_bus_connection_string>
-          - name: QUEUE_NAME
-            value: orders
+        envFrom:
+          - configMapRef:
+              name: service-bus-connection-str
         resources:
           requests:
-            cpu: 500m
+            cpu: 200m
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -48,11 +41,11 @@ spec:
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: consumer-app
-  namespace: consumer
+  name: order-consumer
+  namespace: order
 spec:
   scaleTargetRef:
-    name: consumer-app
+    name: order-consumer
   pollingInterval: 15
   minReplicaCount: 0
   maxReplicaCount: 20
@@ -60,6 +53,5 @@ spec:
   - type: azure-servicebus
     metadata:
       queueName: orders
-      namespace: <service_bus_namespace>
-      messageCount: "10"
+      messageCount: "50"
       connectionFromEnv: CONNECTION_STR

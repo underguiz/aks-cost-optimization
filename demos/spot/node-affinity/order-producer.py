@@ -1,6 +1,7 @@
 import os
 import random
 import string
+import time
 from azure.servicebus import ServiceBusClient, ServiceBusMessage
 
 CONNECTION_STR = os.getenv('CONNECTION_STR')
@@ -16,7 +17,8 @@ servicebus_client = ServiceBusClient.from_connection_string(conn_str=CONNECTION_
 with servicebus_client:
     sender = servicebus_client.get_queue_sender(queue_name=QUEUE_NAME)
     with sender:
-        letters = string.digits
+        chars = string.digits
         while (True):
-            content = ''.join(random.choice(letters) for i in range(10))
+            content = ''.join(random.choice(chars) for i in range(10))
             send_message(sender, content)
+            time.sleep(0.1)

@@ -15,4 +15,4 @@ with servicebus_client:
         for msg in receiver:
             print("Order ID Received: " + str(msg))
             receiver.complete_message(msg)
-            time.sleep(1)
+            time.sleep(0.1)
