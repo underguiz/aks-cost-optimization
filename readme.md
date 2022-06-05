@@ -134,7 +134,7 @@ $ kubectl apply -f order-consumer.yaml
 Start producing messages
 ```
 $ kubectl apply -f order-producer.yaml
-$ kubectl -n order scale --replicas=0 deployment/order-producer
+$ kubectl -n order scale --replicas=8 deployment/order-producer
 ```
 
 Watch the consumer app deployment scale based on the queue size leveraging KEDA
