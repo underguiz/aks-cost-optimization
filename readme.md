@@ -82,7 +82,7 @@ Test the policy
 ```
 $ cd ./demos/quota
 $ kubectl config use-context aks-workshop-dev
-$ kubectl apply -f nginx-2.yaml --namespace=default
+$ kubectl apply -f nginx-3.yaml --namespace=default
 ````
 
 ### Hot Warm

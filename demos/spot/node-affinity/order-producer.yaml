@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: producer
-        image: aksworkshopIi9LzS.azurecr.io/order-producer:v1
+        image: <registry_name>.azurecr.io/order-producer:v1
         envFrom:
           - configMapRef:
               name: service-bus-connection-str

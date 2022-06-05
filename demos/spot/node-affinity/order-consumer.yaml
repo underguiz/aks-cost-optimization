@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: consumer
-        image: aksworkshopIi9LzS.azurecr.io/order-consumer:v1
+        image: <registry_name>.azurecr.io/order-consumer:v1
         imagePullPolicy: Always
         envFrom:
           - configMapRef:
