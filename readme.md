@@ -133,7 +133,7 @@ $ kubectl apply -f order-consumer.yaml
 
 Start producing messages
 ```
-$ $ kubectl apply -f order-producer.yaml
+$ kubectl apply -f order-producer.yaml
 $ kubectl -n order scale --replicas=0 deployment/order-producer
 ```
 
