@@ -140,8 +140,8 @@ $ kubectl -n order scale --replicas=8 deployment/order-producer
 Watch the consumer app deployment scale based on the queue size leveraging KEDA
 
 ```
-$ watch -n 5 kubectl -n consumer get pods -o wide
-$ kubectl -n consumer logs --selector app=consumer-app -f --max-log-requests 40
+$ watch -n 5 kubectl -n order get pods -o wide
+$ kubectl -n order logs --selector app=order-consumer -f --max-log-requests 40
 ```
 
 Scale spot instances to zero simulating a scenario where spot instances are unavailable and watch the deployment being allocated in regular instances

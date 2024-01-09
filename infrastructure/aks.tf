@@ -5,6 +5,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   location            = data.azurerm_resource_group.aks-workshop.location
 
   role_based_access_control_enabled = true
+  
+  workload_autoscaler_profile {
+    keda_enabled = true
+  }
 
   default_node_pool {
     name                = "regular"
@@ -16,10 +20,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   network_profile {
-    network_plugin     = "azure"
-    service_cidr       = "172.29.100.0/24"
-    dns_service_ip     = "172.29.100.10"
-    docker_bridge_cidr = "172.29.101.0/24"  
+    network_plugin      = "azure"
+    service_cidr        = "172.29.100.0/24"
+    dns_service_ip      = "172.29.100.10"
+    network_plugin_mode = "overlay"
   }
 
   identity {
@@ -64,10 +68,10 @@ resource "azurerm_kubernetes_cluster" "aks-dev" {
   }
 
   network_profile {
-    network_plugin     = "azure"
-    service_cidr       = "172.29.100.0/24"
-    dns_service_ip     = "172.29.100.10"
-    docker_bridge_cidr = "172.29.101.0/24"  
+    network_plugin      = "azure"
+    network_plugin_mode = "overlay"
+    service_cidr        = "172.29.100.0/24"
+    dns_service_ip      = "172.29.100.10"
   }
 
   identity {
