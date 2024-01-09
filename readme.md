@@ -149,7 +149,7 @@ Scale spot instances to zero simulating a scenario where spot instances are unav
 ```
 $ az aks nodepool update --resource-group <resource_group_name> --cluster-name aks-workshop --name spot --disable-cluster-autoscaler
 $ az aks nodepool scale --resource-group <resource_group_name> --cluster-name aks-workshop --name spot --node-count 0
-$ watch -n 5 kubectl -n consumer get pods -o wide
+$ watch -n 5 kubectl -n order get pods -o wide
 ```
 
 Watch the queue getting consumed again
