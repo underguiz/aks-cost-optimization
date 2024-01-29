@@ -16,7 +16,7 @@ spec:
       serviceAccountName: order-app-sa
       containers:
       - name: producer
-        image: <container_registry_name>.azurecr.io/order-producer:v2
+        image: <container_registry_name>.azurecr.io/order-producer:v1
         envFrom:
           - configMapRef:
               name: service-bus-config
