@@ -11,13 +11,15 @@ spec:
     metadata:
       labels:
         app: order-producer
+        azure.workload.identity/use: "true"
     spec:
+      serviceAccountName: order-app-sa
       containers:
       - name: producer
-        image: <registry_name>.azurecr.io/order-producer:v1
+        image: <container_registry_name>.azurecr.io/order-producer:v2
         envFrom:
           - configMapRef:
-              name: service-bus-connection-str
+              name: service-bus-config
         resources:
           requests:
             cpu: 200m

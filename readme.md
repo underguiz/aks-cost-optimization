@@ -125,7 +125,7 @@ $ az aks get-credentials --resource-group <resource_group_name> --name aks-works
 $ kubectl config use-context aks-workshop
 ```
 
-Edit ```order-consumer.yaml``` and ```order-producer.yaml```, set the ```<container_registry_name>``` from the terraform output and then apply the Service Bus consumer app deployment
+Edit ```order-consumer.yaml``` and ```order-producer.yaml```, set the ```<container_registry_name>```, ```<service_bus_name>``` and ```<identity_client_id>``` from the terraform output and then apply the Service Bus consumer app deployment
 
 ```
 $ kubectl apply -f order-consumer.yaml

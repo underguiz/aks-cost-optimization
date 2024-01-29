@@ -1,13 +1,15 @@
 import os
-import random
-import string
 import time
-from azure.servicebus import ServiceBusClient, ServiceBusMessage
+from azure.identity import DefaultAzureCredential
+from azure.servicebus import ServiceBusClient
 
-CONNECTION_STR = os.getenv('CONNECTION_STR')
+HOST_NAME  = os.getenv('HOST_NAME')
 QUEUE_NAME = os.getenv('QUEUE_NAME')
+CLIENT_ID  = os.getenv('AZURE_CLIENT_ID')
 
-servicebus_client = ServiceBusClient.from_connection_string(conn_str=CONNECTION_STR, logging_enable=True)
+credential = DefaultAzureCredential(managed_identity_client_id=CLIENT_ID)
+
+servicebus_client = ServiceBusClient(HOST_NAME, credential)
 
 with servicebus_client:
     receiver = servicebus_client.get_queue_receiver(queue_name=QUEUE_NAME)

@@ -13,8 +13,7 @@ output "servicebus_namespace" {
   description = "Service Bus Namespace"
 }
 
-output "servicebus_connection_string" {
-  value       = nonsensitive(azurerm_servicebus_queue_authorization_rule.consumer-app.primary_connection_string)
-  description = "Service Bus Connection String"
+output "managed_identity_id" {
+  value       = azurerm_user_assigned_identity.order-app-identity.client_id
+  description = "Managed Identity Client ID"
 }
-

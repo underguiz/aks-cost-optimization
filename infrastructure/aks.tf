@@ -5,6 +5,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
   location            = data.azurerm_resource_group.aks-workshop.location
 
   role_based_access_control_enabled = true
+  oidc_issuer_enabled               = true
+  workload_identity_enabled         = true
   
   workload_autoscaler_profile {
     keda_enabled = true

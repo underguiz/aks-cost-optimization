@@ -6,7 +6,7 @@ RUN apt-get update &&\
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-RUN pip install azure-servicebus
+RUN pip install azure-servicebus azure-identity
 
 FROM python:3.10-slim
 COPY --from=venv /opt/venv /opt/venv

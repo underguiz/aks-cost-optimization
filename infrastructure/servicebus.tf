@@ -15,30 +15,21 @@ resource "azurerm_servicebus_queue" "orders" {
   namespace_id = azurerm_servicebus_namespace.aks-workshop.id
 }
 
-resource "azurerm_servicebus_queue_authorization_rule" "consumer-app" {
-  name     = "consumerapp"
-  queue_id = azurerm_servicebus_queue.orders.id
-
-  listen = true
-  send   = true
-  manage = true
+resource "azurerm_role_assignment" "order-app" {
+  scope                = azurerm_servicebus_queue.orders.id
+  role_definition_name = "Azure Service Bus Data Owner"
+  principal_id         = azurerm_user_assigned_identity.order-app-identity.principal_id
 }
 
-resource "kubernetes_namespace" "order" {
+resource "kubernetes_config_map" "service-bus-config" {
   metadata {
-    name = "order"
-  }
-}
-
-resource "kubernetes_config_map" "service-bus-connection-str" {
-  metadata {
-    name      = "service-bus-connection-str"
+    name      = "service-bus-config"
     namespace = kubernetes_namespace.order.metadata.0.name
   }
 
   data = {
     QUEUE_NAME     = "orders"
-    CONNECTION_STR = azurerm_servicebus_queue_authorization_rule.consumer-app.primary_connection_string
+    HOST_NAME      = "${azurerm_servicebus_namespace.aks-workshop.name}.servicebus.windows.net"
   }
 
 }
