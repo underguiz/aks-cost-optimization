@@ -23,7 +23,8 @@ spec:
               name: service-bus-config
         resources:
           requests:
-            cpu: 200m
+            cpu: 500m
+            memory: 1Gi
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

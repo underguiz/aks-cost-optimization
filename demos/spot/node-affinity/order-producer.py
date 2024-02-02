@@ -9,7 +9,7 @@ HOST_NAME = os.getenv('HOST_NAME')
 QUEUE_NAME = os.getenv('QUEUE_NAME')
 CLIENT_ID  = os.getenv('AZURE_CLIENT_ID')
 
-credential = DefaultAzureCredential(managed_identity_client_id=CLIENT_ID)
+credential = DefaultAzureCredential(workload_identity_client_id=CLIENT_ID)
 
 def send_message(sender, content):
     message = ServiceBusMessage(content)

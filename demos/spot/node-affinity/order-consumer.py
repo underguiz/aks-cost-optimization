@@ -7,7 +7,7 @@ HOST_NAME  = os.getenv('HOST_NAME')
 QUEUE_NAME = os.getenv('QUEUE_NAME')
 CLIENT_ID  = os.getenv('AZURE_CLIENT_ID')
 
-credential = DefaultAzureCredential(managed_identity_client_id=CLIENT_ID)
+credential = DefaultAzureCredential(workload_identity_client_id=CLIENT_ID)
 
 servicebus_client = ServiceBusClient(HOST_NAME, credential)
 

@@ -14,10 +14,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   default_node_pool {
     name                        = "regular"
-    vm_size                     = "Standard_D4as_v4"
+    temporary_name_for_rotation = "rotation"
+    vm_size                     = "Standard_D2s_v5"
     enable_auto_scaling         = true
     max_count                   = 8
-    min_count                   = 1
+    min_count                   = 2
     vnet_subnet_id              = azurerm_subnet.app.id
     zones                       = [ 1, 2, 3 ]
   }
@@ -38,13 +39,13 @@ resource "azurerm_kubernetes_cluster" "aks" {
 resource "azurerm_kubernetes_cluster_node_pool" "spot" {
   name                  = "spot"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
-  vm_size               = "Standard_D4as_v4"
+  vm_size               = "Standard_D2s_v5"
   priority              = "Spot"
   eviction_policy       = "Delete"
   node_taints           = [ "kubernetes.azure.com/scalesetpriority=spot:NoSchedule" ]
   vnet_subnet_id        = azurerm_subnet.app.id
   max_count             = 8
-  min_count             = 2
+  min_count             = 4
   enable_auto_scaling   = true
   zones                 = [ 1, 2, 3 ]
 }
